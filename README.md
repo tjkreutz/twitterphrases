@@ -9,5 +9,5 @@ The format that is assumed of your data input and output is (JSON lines)[http://
 # Example
 A basic example of generating optimal precision phrases for Dutch is included in main.py. The link to the FastText blogpost lists possible iso language codes for generating twitterphrases for other languages. 
 
-Keyword sets for Dutch can also directly be downloaded from here: [Precision](clips.uantwerpen.be/twitter/phrases/precision), [Recall](clips.uantwerpen.be/twitter/phrases/recall). 
+Keyword sets for Dutch can also directly be downloaded from here: [Precision](https://www.clips.uantwerpen.be/twitter/phrases/precision), [Recall](https://www.clips.uantwerpen.be/twitter/phrases/recall). 
 
