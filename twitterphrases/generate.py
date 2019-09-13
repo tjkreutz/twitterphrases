@@ -2,7 +2,7 @@ import itertools
 from .util import *
 from collections import defaultdict
 
-def optimal_phrases(tweets, optimize='precision', iso_code='nl'):
+def optimal_phrases(tweets, objective='pwr', iso_code='nl'):
     """
     Indexes all tweets to their search phrases
     and find optimal search phrases.
@@ -14,7 +14,7 @@ def optimal_phrases(tweets, optimize='precision', iso_code='nl'):
         if len(ids) == 1:
             del all_phrase_dict[phrase]
 
-    optimal = generate_from_dicts(all_phrase_dict, lang_phrase_dict, optimize)
+    optimal = generate_from_dicts(all_phrase_dict, lang_phrase_dict, objective)
     return optimal
 
 def powerset(iterable):
@@ -67,7 +67,7 @@ def second_pass(tweets, lang_phrase_dict):
                     lang_phrase_dict[fps].add(tweet['id_str'])
     return lang_phrase_dict
 
-def generate_from_dicts(all_phrase_dict, lang_phrase_dict, optimize='recall', top=400):
+def generate_from_dicts(all_phrase_dict, lang_phrase_dict, objective='pwr', top=400):
     """
     Greedy solution for maximum coverage of tweets in lang_phrase_dict.
     """
@@ -75,6 +75,10 @@ def generate_from_dicts(all_phrase_dict, lang_phrase_dict, optimize='recall', to
 
     true_positives = set()
     false_positives = set()
+
+    recall_threshold = 100
+    precision_threshold = 0.9
+
     for i in range(top):
         best_phrase = None
         best_result, best_ranker = 0, 0
@@ -89,21 +93,42 @@ def generate_from_dicts(all_phrase_dict, lang_phrase_dict, optimize='recall', to
             additional_recall = len(new_true_positives)
             additional_precision = len(new_true_positives) / (len(new_false_positives) + len(new_true_positives))
 
-            if optimize == 'recall':
-                result = additional_recall
-                ranker = round(additional_precision)
-            elif optimize == 'precision':
-                result = additional_precision
-                ranker = additional_recall
-            else:
-                return []
+            # optimize recall, precision or precision-weighted recall
+            if objective == 'r' or objective == 'p' or objective == 'pwr':
+                if objective == 'r':
+                    result = additional_recall
+                    ranker = additional_precision
+                elif objective == 'p':
+                    result = additional_precision
+                    ranker = additional_recall
+                else:
+                    result = additional_recall * additional_precision
+                    ranker = additional_recall
 
-            if result > best_result or (result == best_result and ranker > best_ranker):
-                best_phrase = phrase
-                best_result = result
-                best_ranker = ranker
-                best_new_true_positives = new_true_positives
-                best_new_false_positives = new_false_positives
+                if result > best_result or (result == best_result and ranker > best_ranker):
+                    best_phrase = phrase
+                    best_result = result
+                    best_ranker = ranker
+                    best_new_true_positives = new_true_positives
+                    best_new_false_positives = new_false_positives
+
+            # optimize recall threshold or precision threshold
+            elif objective == 'rt' or objective == 'pt':
+                if objective == 'rt':
+                    result = additional_precision
+                    ranker = additional_recall
+                    threshold = recall_threshold
+                else:
+                    result = additional_recall
+                    ranker = additional_precision
+                    threshold = precision_threshold
+
+                if result > best_result and ranker > threshold:
+                    best_phrase = phrase
+                    best_result = result
+                    best_ranker = ranker
+                    best_new_true_positives = new_true_positives
+                    best_new_false_positives = new_false_positives
 
         phrases.append(best_phrase)
         true_positives = true_positives.union(best_new_true_positives)
