@@ -1,5 +1,4 @@
 import sys
-import pickle
 from twitterphrases import util
 from twitterphrases import generate
 
@@ -14,7 +13,7 @@ def main():
     tweets = util.lang_id(tweets)
 
     optimal_phrases = generate.optimal_phrases(tweets, iso_code='nl')
-    pickle.dump(optimal_phrases, open(outfile, 'wb'))
+    open(outfile, 'w').write('\n'.join(optimal_phrases))
 
 if __name__ == "__main__":
     if len(sys.argv) > 2:
