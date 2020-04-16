@@ -13,7 +13,7 @@ def main():
     tweets = util.jsonl_iterator(tweetfile)
     tweets = util.lang_id(tweets)
 
-    optimal_phrases = generate.optimal_phrases(tweets)
+    optimal_phrases = generate.optimal_phrases(tweets, iso_code='nl')
     pickle.dump(optimal_phrases, open(outfile, 'wb'))
 
 if __name__ == "__main__":

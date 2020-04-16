@@ -2,7 +2,7 @@ import itertools
 from .util import *
 from collections import defaultdict
 
-def optimal_phrases(tweets, objective='pwr', iso_code='nl'):
+def optimal_phrases(tweets, iso_code, objective='pwr'):
     """
     Indexes all tweets to their search phrases
     and find optimal search phrases.
@@ -25,7 +25,7 @@ def powerset(iterable):
     s = list(iterable)
     return itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s)+1))
 
-def index_tweets(tweets, iso_code='nl'):
+def index_tweets(tweets, iso_code):
     """
     Generate keyword sets for tweets tagged as being of iso_code,
     and assign other language tweets to those phrases.
