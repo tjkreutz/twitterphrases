@@ -102,7 +102,7 @@ def generate_from_dicts(all_phrase_dict, lang_phrase_dict, objective='pwr', top=
                     result = additional_precision
                     ranker = additional_recall
                 else:
-                    result = additional_recall * additional_precision
+                    result = additional_recall * additional_precision ** 8
                     ranker = additional_recall
 
                 if result > best_result or (result == best_result and ranker > best_ranker):
